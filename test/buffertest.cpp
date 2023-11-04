@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <random>
-#include "../buffer.cpp"
+#include "../src/buffer.cpp"
 
 TEST(BufferTest, FIFO_TEST) {
     Buffer* buffer = new Buffer(5);

@@ -131,7 +131,7 @@ void Buffer::simu_FIFO() {
 }
 
 void Buffer::visit(int pid) {
-    for (int i = 0; i < ap_LRU.size(); i++) {
+    for (long unsigned int i = 0; i < ap_LRU.size(); i++) {
         auto& ap = ap_LRU.at(i);
         if (ap.pid == pid) {
             ap.last_visit_time = time;
@@ -148,7 +148,7 @@ void Buffer::simu_LRU() {
         bool hit = false;
         auto [pid, size] = tasks.front();
         tasks.pop();
-        for (int i = 0; i < ap_LRU.size(); ++i) {
+        for (long unsigned int i = 0; i < ap_LRU.size(); ++i) {
             if (ap_LRU[i].pid == pid) {
                 hit = true;
                 visit(pid);

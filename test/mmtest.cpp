@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <random>
-#include "../mm.cpp"
+#include "../src/mm.cpp"
 
 int remain_free_block_count(MM* mm) {
     int count = 0;
