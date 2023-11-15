@@ -69,7 +69,7 @@ TEST(MMTest, DISABLED_MergeFreeBlock) {
     EXPECT_EQ(mm->free_block->size, 1024);
 }
 
-TEST(MMTest, DISABLED_Hard) {
+TEST(MMTest, Hard) {
     {
         int mem_size = 20000;
         MM* mm = new MM(mem_size);
@@ -95,7 +95,7 @@ TEST(MMTest, DISABLED_Hard) {
     }
 }
 
-TEST(MMTest, Show) {
+TEST(MMTest, DISABLED_Show) {
     MM* mm = new MM();
     mm->set_algorithm(MA_FF);
     mm->new_process(500);

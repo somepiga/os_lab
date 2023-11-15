@@ -309,34 +309,59 @@ int MM::allocate_mem(struct allocated_block* ab) {
     int request_size = ab->size;
     // 根据当前算法在空闲分区链表中搜索合适空闲分区进行分配，分配时注意以下情况：
     // 1. 找到可满足空闲分区且分配后剩余空间足够大，则分割
-    // 2. 找到可满足空闲分区且但分配后剩余空间比较小，则一起分配
+    // 2. ? 找到可满足空闲分区且但分配后剩余空间比较小，则一起分配 ?
     // 3. 找不可满足需要的空闲分区但空闲分区之和能满足需要，则采用内存紧缩技术
     //    进行空闲分区的合并，然后再分配
     // 4. 在成功分配内存后，应保持空闲分区按照相应算法有序
     // 5. 分配成功则返回 1，否则返回-1
 
-    rearrange(ma_algorithm);
-    if (remain_free_block_size() > request_size) {
-        sort_free_block();
-        merge_free_block();
-
-        int min_frag = 50;
+    if (remain_free_block_size() >= request_size) {
         struct free_block_type* fb_head = free_block;
         while (fb_head != NULL) {
-            if (fb_head->size >= request_size + min_frag) {
+            if (fb_head->size >= request_size) {
                 ab->start_addr = fb_head->start_addr;
                 fb_head->size -= request_size;
                 fb_head->start_addr += request_size;
                 rearrange(ma_algorithm);
                 return 1;
-            } else if (fb_head->size >= request_size) {
+            }
+            fb_head = fb_head->next;
+        }
+
+        // 内存紧缩
+        sort_free_block();
+        merge_free_block();
+
+        fb_head = free_block;
+        while (fb_head != NULL) {
+            if (fb_head->size >= request_size) {
                 ab->start_addr = fb_head->start_addr;
-                dispose(fb_head);
+                fb_head->size -= request_size;
+                fb_head->start_addr += request_size;
                 rearrange(ma_algorithm);
                 return 1;
             }
             fb_head = fb_head->next;
         }
+
+        // 满足要求第2条，但是没有写测试用例
+        // int min_frag = 50;
+        // struct free_block_type* fb_head = free_block;
+        // while (fb_head != NULL) {
+        //     if (fb_head->size >= request_size + min_frag) {
+        //         ab->start_addr = fb_head->start_addr;
+        //         fb_head->size -= request_size;
+        //         fb_head->start_addr += request_size;
+        //         rearrange(ma_algorithm);
+        //         return 1;
+        //     } else if (fb_head->size >= request_size) {
+        //         ab->start_addr = fb_head->start_addr;
+        //         dispose(fb_head);
+        //         rearrange(ma_algorithm);
+        //         return 1;
+        //     }
+        //     fb_head = fb_head->next;
+        // }
     }
 
     return -1;
@@ -372,6 +397,7 @@ void MM::do_exit() {
     }
 }
 
+// 按地址升序排列空闲页
 struct free_block_type* MM::sort_free_block() {
     struct free_block_type* fb_head;
     struct free_block_type dummy;

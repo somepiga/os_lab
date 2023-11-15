@@ -42,7 +42,7 @@ class Buffer {
 
     void visit(int page_id);
     void set_tasks_randomly(int tasks_size);
-    void set_tasks_handly(int tasks_size);
+    void set_tasks_handly(std::vector<int> task_pid);
     void show_tasks();
 
     void simu(int algorithm);
@@ -69,11 +69,9 @@ void Buffer::set_tasks_randomly(int tasks_size) {
     }
 }
 
-void Buffer::set_tasks_handly(int tasks_size) {
-    for (int i = 1; i <= tasks_size; ++i) {
-        int pid, size;
-        scanf("task pid: %d, task size: %d", &pid, &size);
-        tasks.emplace(std::make_pair(pid, size));
+void Buffer::set_tasks_handly(std::vector<int> task_pid) {
+    for (auto pid : task_pid) {
+        tasks.emplace(std::make_pair(pid, TASK_SIZE));
     }
 }
 

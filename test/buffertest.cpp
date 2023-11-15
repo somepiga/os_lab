@@ -8,6 +8,21 @@ TEST(BufferTest, FIFO_TEST) {
     buffer->simu_FIFO();
 }
 
+TEST(BufferTest, BLEADY_TEST) {
+    {
+        Buffer* buffer = new Buffer(3);
+        buffer->set_tasks_handly(
+            std::vector<int>{1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5});
+        buffer->simu_FIFO();
+    }
+    {
+        Buffer* buffer = new Buffer(4);
+        buffer->set_tasks_handly(
+            std::vector<int>{1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5});
+        buffer->simu_FIFO();
+    }
+}
+
 TEST(BufferTest, LRU_TEST) {
     Buffer* buffer = new Buffer(5);
     buffer->set_tasks_randomly(10);
