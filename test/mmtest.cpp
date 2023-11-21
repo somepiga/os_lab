@@ -95,6 +95,12 @@ TEST(MMTest, Hard) {
     }
 }
 
+TEST(MMTest, DISABLED_HandySim) {
+    MM* mm = new MM();
+    mm->handy_sim();
+    delete (mm);
+}
+
 TEST(MMTest, DISABLED_Show) {
     MM* mm = new MM();
     mm->set_algorithm(MA_FF);

@@ -14,6 +14,9 @@
 #define MA_FF 1
 #define MA_BF 2
 #define MA_WF 3
+/* 测试模式 */
+#define AUTO 1
+#define HANDY 2
 
 /*描述每一个空闲块的数据结构*/
 struct free_block_type {
@@ -53,15 +56,15 @@ class MM {
     int remain_free_block_size();
     void display_menu();
     int set_mem_size();
-    void set_algorithm(int algorithm);
+    void set_algorithm(int algorithm, int model = AUTO);
     void rearrange(int algorithm);
     void rearrange_FF();
     void rearrange_BF();
     void rearrange_WF();
-    int new_process(int size);
+    int new_process(int size, int model = AUTO);
     int allocate_mem(struct allocated_block* ab);
     struct allocated_block* find_process(int pid);
-    void kill_process(int pid);
+    void kill_process(int pid, int model = AUTO);
     void do_exit();
     int free_mem(struct allocated_block* ab);
     int dispose(struct allocated_block* free_ab);
@@ -69,6 +72,7 @@ class MM {
     int display_mem_usage();
     struct free_block_type* sort_free_block();
     struct free_block_type* merge_free_block();
+    void handy_sim();
 };
 
 MM::MM() {
@@ -140,14 +144,20 @@ int MM::set_mem_size() {
 }
 
 /* 设置当前的分配算法 */
-void MM::set_algorithm(int algorithm) {
-    // int algorithm;
-    // printf("\t1 - First Fit\n");
-    // printf("\t2 - Best Fit \n");
-    // printf("\t3 - Worst Fit \n");
-    // scanf("%d", &algorithm);
-    if (algorithm >= 1 && algorithm <= 3) {
-        ma_algorithm = algorithm;
+void MM::set_algorithm(int algorithm, int model) {
+    if (model == HANDY) {
+        int algorithm;
+        printf("\t1 - First Fit\n");
+        printf("\t2 - Best Fit \n");
+        printf("\t3 - Worst Fit \n");
+        scanf("%d", &algorithm);
+        if (algorithm >= 1 && algorithm <= 3) {
+            ma_algorithm = algorithm;
+        }
+    } else {
+        if (algorithm >= 1 && algorithm <= 3) {
+            ma_algorithm = algorithm;
+        }
     }
     // 按指定算法重新排列空闲区链表
     rearrange(ma_algorithm);
@@ -267,9 +277,8 @@ void MM::rearrange_WF() {
 }
 
 /*创建新的进程，主要是获取内存的申请数量*/
-int MM::new_process(int size) {
+int MM::new_process(int size, int model) {
     struct allocated_block* ab;
-    // int size;
     int ret;
     ab = (struct allocated_block*)malloc(sizeof(struct allocated_block));
     if (!ab) {
@@ -279,10 +288,16 @@ int MM::new_process(int size) {
     pid++;
     sprintf(ab->process_name, "PROCESS-%02d", pid);
     ab->pid = pid;
-    // printf("Memory for %s:", ab->process_name);
-    // scanf("%d", &size);
-    if (size > 0)
-        ab->size = size;
+    if (model == HANDY) {
+        int size;
+        printf("Memory for %s:", ab->process_name);
+        scanf("%d", &size);
+        if (size > 0)
+            ab->size = size;
+    } else {
+        if (size > 0)
+            ab->size = size;
+    }
     ret = allocate_mem(ab);
     /* 从空闲区分配内存，ret==1 表示分配 ok*/
     /* 如果此时 allocated_block_head 尚未赋值，则赋值*/
@@ -379,15 +394,23 @@ struct allocated_block* MM::find_process(int pid) {
 }
 
 /*删除进程，归还分配的存储空间，并删除描述该进程内存分配的节点*/
-void MM::kill_process(int pid) {
+void MM::kill_process(int pid, int model) {
     struct allocated_block* ab;
-    // int pid;
-    // printf("Kill Process, pid=");
-    // scanf("%d", &pid);
-    ab = find_process(pid);
-    if (ab != NULL) {
-        free_mem(ab); /*释放 ab 所表示的分配区*/
-        dispose(ab);  /*释放 ab 数据结构节点*/
+    if (model == HANDY) {
+        int pid;
+        printf("Kill Process, pid=");
+        scanf("%d", &pid);
+        ab = find_process(pid);
+        if (ab != NULL) {
+            free_mem(ab); /*释放 ab 所表示的分配区*/
+            dispose(ab);  /*释放 ab 数据结构节点*/
+        }
+    } else {
+        ab = find_process(pid);
+        if (ab != NULL) {
+            free_mem(ab); /*释放 ab 所表示的分配区*/
+            dispose(ab);  /*释放 ab 数据结构节点*/
+        }
     }
 }
 
@@ -581,38 +604,38 @@ int MM::remain_free_block_size() {
     return size;
 }
 
-// int main() {
-//     int choice;
-//     pid = 0;
-//     free_block = init_free_block(mem_size);  // 初始化空闲区
-//     while (1) {
-//         display_menu();        // 显示菜单
-//         scanf("%d", &choice);  // 获取用户输入
-//         switch (choice) {
-//             case 1:
-//                 set_mem_size();
-//                 break;  // 设置内存大小
-//             case 2:
-//                 set_algorithm();
-//                 flag = 1;
-//                 break;  // 设置算法
-//             case 3:
-//                 new_process();
-//                 flag = 1;
-//                 break;  // 创建新进程
-//             case 4:
-//                 kill_process();
-//                 flag = 1;
-//                 break;  // 删除进程
-//             case 5:
-//                 display_mem_usage();
-//                 flag = 1;
-//                 break;  // 显示内存使用
-//             case 6:
-//                 do_exit();
-//                 exit(0);
-//             default:
-//                 break;
-//         }
-//     }
-// }
+void MM::handy_sim() {
+    int choice;
+    pid = 0;
+    free_block = init_free_block(mem_size);  // 初始化空闲区
+    while (1) {
+        display_menu();        // 显示菜单
+        scanf("%d", &choice);  // 获取用户输入
+        switch (choice) {
+            case 1:
+                set_mem_size();
+                break;  // 设置内存大小
+            case 2:
+                set_algorithm(-1, HANDY);
+                flag = 1;
+                break;  // 设置算法
+            case 3:
+                new_process(-1, HANDY);
+                flag = 1;
+                break;  // 创建新进程
+            case 4:
+                kill_process(-1, HANDY);
+                flag = 1;
+                break;  // 删除进程
+            case 5:
+                display_mem_usage();
+                flag = 1;
+                break;  // 显示内存使用
+            case 6:
+                do_exit();
+                return;
+            default:
+                break;
+        }
+    }
+}
