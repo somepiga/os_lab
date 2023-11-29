@@ -19,18 +19,11 @@ int main(void) {
         printf("输入账号\n");
         scanf("%c", &my_id);
         if (fork() == 0) {
-            // message msg = {REG, 0, {'0'}, {'\0'}};
-            // msg.type = REG;
-            // msg.from = my_id;
-            // toString(msg, input);
-
-            // write(fd, input, 100);
             while (1) {
                 message msg = {TRANS, 0, {0}, {0}};
                 msg.type = TRANS;
                 msg.from = my_id;
 
-                // printf("data: ");
                 scanf("%s", msg.data);
 
                 if (strcmp(msg.data, "EXIT") == 0) {
@@ -39,7 +32,6 @@ int main(void) {
                     close(fd);
                     break;
                 }
-                // printf("to: ");
                 scanf("%s", msg.to);
 
                 toString(msg, input);

@@ -20,6 +20,13 @@ extern volatile int read_listen;
 
 extern void signal_handler(int signum);
 
+/*
+    +-----------------------------------------------------------+
+    | type | from |    to    |               data               |
+    +-----------------------------------------------------------+
+    0      1      2          12                                 99
+
+ */
 typedef struct message {
     int type;
     char from;

@@ -81,6 +81,11 @@
         "__tuple": "cpp",
         "ios": "cpp",
         "locale": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "kernel.h": "c",
+        "sysinfo.h": "c",
+        "types.h": "c",
+        "module.h": "c",
+        "unistd.h": "c"
     }
 }
